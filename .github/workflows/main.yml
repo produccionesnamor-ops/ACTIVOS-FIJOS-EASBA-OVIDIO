@@ -1,0 +1,171 @@
+.gradle/
+.idea/
+local.properties
+build/
+**/build/
+*.iml
+.DS_Store
+
+plugins {
+    id("com.android.application") version "8.13.2" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.21" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.2.21" apply false
+}
+
+# Cómo obtener el APK instalable de ActivoFoto
+
+El código Android está incluido aquí, pero **este paquete no contiene aún un APK**. Se incluye un flujo de **GitHub Actions** que, al ejecutarse en GitHub, compila un APK Android de depuración firmado automáticamente. Se llama `app-debug.apk` y sirve para instalarlo en celulares con Android 8.0 o posterior y probar sus funciones.
+
+## Opción A — Generar el APK en GitHub (sin instalar programas)
+
+1. En [github.com/new](https://github.com/new), inicia sesión y crea un repositorio privado, por ejemplo `ActivoFoto`.
+2. Descomprime `ActivoFoto_Android_Con_Compilacion.zip` en tu computadora.
+3. En el repositorio, selecciona **Add file > Upload files** y sube **todo el contenido** de la carpeta `ActivoFoto_Android`, incluyendo la carpeta oculta `.github` y el archivo `.github/workflows/generar-apk.yml`. Confirma con **Commit changes**. Para asegurarte de que GitHub conserve la carpeta `.github`, puedes verificar que aparezca en la lista de archivos del repositorio.
+4. En el repositorio abre **Actions**, selecciona **Generar APK Android**, pulsa **Run workflow** y confirma. Si al subir los archivos se ha iniciado automáticamente el flujo, no hace falta iniciarlo de nuevo.
+5. Abre la ejecución completada de **Generar APK Android** y, en **Artifacts**, descarga **ActivoFoto-APK**. Descomprime lo descargado: encontrarás `app-debug.apk`.
+6. Envía `app-debug.apk` al teléfono, ábrelo e instala. Android puede pedirte habilitar temporalmente la instalación desde la aplicación que abre el archivo.
+
+**Si falla la compilación:** abre la ejecución en Actions, entra en **Compilar ActivoFoto** y revisa el paso con error. El proyecto no ha sido compilado ni probado físicamente en este entorno, de modo que la compilación y pruebas son necesarias antes de usarlo con información real.
+
+## Opción B — Compilar en Android Studio
+
+Instala Android Studio y Android SDK 36; abre esta carpeta como proyecto de Android. Este código fuente incluye `gradle/wrapper/gradle-wrapper.properties`, pero no el archivo binario `gradle-wrapper.jar`. Si tu instalación lo exige, instala Gradle 8.13 y genera el wrapper usando `gradle wrapper --gradle-version 8.13`, o genera el APK usando Gradle 8.13 instalado directamente con `gradle :app:assembleDebug`.
+
+Ruta del APK de depuración: `app/build/outputs/apk/debug/app-debug.apk`.
+
+## Alcance y resguardo de fotos
+
+Esta versión guarda fotos y base de datos **dentro de la aplicación en el celular**. Puedes usarla sin conexión y exportar ZIP más CSV para compartirlo cuando tengas internet. No hay sincronización automática entre celulares. **Exporta el ZIP de respaldo antes de desinstalar o cambiar de equipo**, ya que podrías perder el inventario local. Para instalación en muchos celulares o publicación en Play Store se necesitará preparar una versión de producción firmada con una clave privada propia.
+
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+kotlin.code.style=official
+
+ACTIVOFOTO — CÓMO GENERAR EL APK
+================================
+
+Este ZIP contiene el proyecto de código fuente, no un APK ya compilado.
+
+1) Extrae el ZIP en tu PC.
+2) Crea un repositorio privado en https://github.com/new
+3) Dentro del repositorio, usa "Add file > Upload files" para subir TODO el
+   contenido de la carpeta ActivoFoto_Android (no el ZIP), incluida la carpeta
+   oculta .github y el archivo .github/workflows/generar-apk.yml.
+4) Haz clic en "Commit changes" para guardar los archivos.
+5) Abre la pestaña "Actions" de tu repositorio.
+6) Selecciona "Generar APK Android" en la barra lateral.
+7) Selecciona "Run workflow", rama main, y confirma con "Run workflow".
+   Si ya hay una ejecución en marcha por la subida del proyecto, usa esa.
+8) Abre la ejecución terminada. Si está verde, bajo "Artifacts" haz clic en
+   "ActivoFoto-APK".
+9) Extrae el ZIP descargado de GitHub. Dentro tendrás "app-debug.apk".
+10) Transfiere el APK al celular Android y ábrelo para instalarlo.
+
+Si no aparece el workflow, comprueba que la ruta sea exactamente:
+.github/workflows/generar-apk.yml en la RAÍZ del repositorio, no dentro de
+otra carpeta. Si la compilación falla, abre el registro de la ejecución.
+
+Esta versión guarda fotos por código del activo de forma local y permite
+exportar un respaldo ZIP. No tiene sincronización automática entre teléfonos.
+Realiza copias de seguridad antes de desinstalar la aplicación.
+
+Consulta GENERAR_APK.md para instrucciones ampliadas.
+
+# ActivoFoto 1.0 — Proyecto Android
+
+**Inventario fotográfico de activos fijos, con operación sin conexión.**
+
+## Lo que hace esta primera versión
+
+- Introducir un **código de activo fijo** (obligatorio) y una descripción (opcional).
+- Abrir la cámara del teléfono para tomar una foto de alta calidad.
+- **Incrustar el código y la fecha** en una banda dentro del propio archivo JPG.
+- Generar un nombre de archivo identificable, por ejemplo `AF-00125_20261111_153025_a1b2c3.jpg`.
+- Tomar varias fotos del mismo activo y agruparlas por código.
+- Buscar activos, ver la galería, abrir, compartir y eliminar fotos con confirmación.
+- Exportar un **ZIP** que contiene todas las imágenes y `inventario.csv` (código, descripción, fecha y nombre).
+- Trabajar completamente **sin internet**; cuando hay internet, compartir el ZIP usando Google Drive, correo, etc. mediante el menú de Android.
+
+## Cómo se usa
+
+1. Abrir **ActivoFoto** y pulsar **Registrar fotografía**.
+2. Ingresar el código, por ejemplo `AF-00125`; opcionalmente, una descripción.
+3. Pulsar **Abrir cámara y tomar foto**, tomar y aceptar la foto en la cámara.
+4. ActivoFoto guarda el JPG con código y fecha incrustados y abre la galería de ese activo.
+5. Pulsar **Tomar otra foto** para seguir con el mismo activo, o volver e iniciar otro registro.
+6. En **Inicio > Exportar ZIP**, compartir el respaldo usando Drive o cualquier app compatible.
+
+## Abrir y generar el APK
+
+Se entrega el **código fuente completo del módulo Android**, pero **NO un APK ya compilado**. Este entorno no incluye Android SDK/Gradle; la compilación y prueba física deben realizarse en Android Studio.
+
+**Requisitos sugeridos:** Android Studio actualizado, JDK 17 y Android SDK 36.
+
+1. Abrir esta carpeta `ActivoFoto_Android` como proyecto en Android Studio.
+2. Permitir que Android Studio sincronice las dependencias por internet.
+3. **Importante:** este archivo ZIP no trae el binario estándar `gradle-wrapper.jar` ni los scripts `gradlew` porque no se dispone de ellos aquí. Si Android Studio requiere wrapper, instalar Gradle 8.13 o usar un proyecto Android nuevo y ejecutar `gradle wrapper --gradle-version 8.13` en la carpeta raíz; alternativamente, copiar el wrapper generado por Android Studio. Consultar el apartado de Gradle del asistente.
+4. Verificar que están instalados **SDK Android 36** y **JDK 17**.
+5. Seleccionar un celular Android conectado por USB con depuración habilitada y presionar **Run**.
+6. Para generar un APK de prueba: **Build > Build Bundle(s) / APK(s) > Build APK(s)**. El archivo suele aparecer en `app/build/outputs/apk/debug/app-debug.apk`.
+
+> La versión 1.0 es una base de código que requiere compilación y pruebas; no afirmar que está probada en teléfonos todavía.
+
+## Tecnología
+
+- Kotlin + Jetpack Compose (Material 3)
+- `SQLiteOpenHelper`: base de datos local, persistente, sin servidores.
+- `ActivityResultContracts.TakePicture`: abre cámara del sistema.
+- `FileProvider`: compartición segura de archivos.
+- `ExifInterface` + `Canvas`: orientación de foto y sobreimpresión de etiquetas.
+- `ZipOutputStream`: exportación a ZIP + CSV sin librerías extras.
+- Soporte: **Android 8.0 o superior (API 26+)**.
+
+## Alcance online/offline y seguridad
+
+- **OFFLINE:** fotos, búsqueda, galería, base de datos y exportación ZIP funcionan localmente.
+- **ONLINE:** se puede compartir el respaldo usando Drive u otras aplicaciones instaladas. **No incluye sincronización automática entre teléfonos** ni inicio de sesión en servidor. Para agregar esa función se necesita decidir servidor, cuentas, permisos y políticas de respaldo.
+- Los datos están en almacenamiento privado de la app; **desinstalarla puede borrar el inventario local**. Antes de ello, exportar y resguardar el ZIP.
+- Esta versión comprime fotos a un tamaño de hasta ~2400 píxeles en su lado mayor; puede disminuir la resolución de cámaras de alta gama.
+- El código y la fecha se agregan a la copia procesada; no se guardan originales sin marcar.
+- Los códigos se normalizan a mayúsculas; el CSV usa `;` como separador, conveniente para Excel regional.
+
+## Estructura
+
+```
+app/src/main/java/bo/activofoto/app/
+    MainActivity.kt     # pantallas y flujo de uso
+    InventoryStore.kt   # activos y fotos en SQLite
+    PhotoTools.kt       # captura, marca de agua, ZIP y compartir
+app/src/main/AndroidManifest.xml
+app/src/main/res/xml/file_paths.xml
+```
+
+## Mejoras siguientes
+
+1. Lectura de código de barras y QR.
+2. Registro de ubicación física, custodio, centro de costo y estado del activo.
+3. Sincronización automática con servidor al recuperar internet; control de duplicados y usuarios.
+4. Importación de lista maestra de activos desde Excel.
+5. Reporte PDF/Excel e historial de auditoría.
+6. Copia del ZIP en una carpeta elegida por el usuario y restauración de respaldos.
+
+## Advertencia de calidad
+
+Se revisó la estructura del proyecto y el flujo del código, pero en el entorno de entrega no hay un SDK de Android para ejecutar compilación o pruebas instrumentadas. Antes de un despliegue corporativo, probar cámara, orientación, guardado, permisos y exportación con los modelos reales de celulares.
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "ActivoFoto"
+include(":app")
