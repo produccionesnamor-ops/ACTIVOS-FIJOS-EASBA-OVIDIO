@@ -1,0 +1,29 @@
+ACTIVOFOTO — CÓMO GENERAR EL APK
+================================
+
+Este ZIP contiene el proyecto de código fuente, no un APK ya compilado.
+
+1) Extrae el ZIP en tu PC.
+2) Crea un repositorio privado en https://github.com/new
+3) Dentro del repositorio, usa "Add file > Upload files" para subir TODO el
+   contenido de la carpeta ActivoFoto_Android (no el ZIP), incluida la carpeta
+   oculta .github y el archivo .github/workflows/generar-apk.yml.
+4) Haz clic en "Commit changes" para guardar los archivos.
+5) Abre la pestaña "Actions" de tu repositorio.
+6) Selecciona "Generar APK Android" en la barra lateral.
+7) Selecciona "Run workflow", rama main, y confirma con "Run workflow".
+   Si ya hay una ejecución en marcha por la subida del proyecto, usa esa.
+8) Abre la ejecución terminada. Si está verde, bajo "Artifacts" haz clic en
+   "ActivoFoto-APK".
+9) Extrae el ZIP descargado de GitHub. Dentro tendrás "app-debug.apk".
+10) Transfiere el APK al celular Android y ábrelo para instalarlo.
+
+Si no aparece el workflow, comprueba que la ruta sea exactamente:
+.github/workflows/generar-apk.yml en la RAÍZ del repositorio, no dentro de
+otra carpeta. Si la compilación falla, abre el registro de la ejecución.
+
+Esta versión guarda fotos por código del activo de forma local y permite
+exportar un respaldo ZIP. No tiene sincronización automática entre teléfonos.
+Realiza copias de seguridad antes de desinstalar la aplicación.
+
+Consulta GENERAR_APK.md para instrucciones ampliadas.
